@@ -1,25 +1,37 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import "./App.css";
+import CardList from "./components/card-list/card-list.component";
+import SearchBox from "./components/searchBox/searchBox.component";
 
-function App() {
-  return (
+const App = () => {
+  const [users, setUsers] = useState([]);
+  const [searchField, setSearchField] = useState("");
+
+  useEffect(() => {
+    fetch("https://jsonplaceholder.typicode.com/users")
+      .then((response) => response.json())
+      .then((users) => setUsers(users));
+  }, []);
+  const handleChange = (e) => {
+    setSearchField(e.target.value);
+  };
+
+  const filteredUsers = users
+    ? users.filter((user) =>
+        user.name.toLowerCase().includes(searchField.toLowerCase())
+      )
+    : null;
+
+  return !users.length ? (
+    <h2>Loading...</h2>
+  ) : (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>Employee List</h1>
+      <SearchBox placeholder="search" handleChange={handleChange} />
+
+      <CardList users={filteredUsers}></CardList>
     </div>
   );
-}
+};
 
 export default App;
